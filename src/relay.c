@@ -110,8 +110,8 @@ const CliCmdType CMD_RELAY_WRITE =
 	1,
 	&doRelayWrite,
 	"\toutwr:		Set outpus (switch) On/Off\n",
-	"\tUsage:		pcar outwr <channel[1..4]> <0/1>\n",
-	"\tUsage:		pcar outwr <value[0..15]>\n",
+	"\tUsage:		pcar outwr <channel[1..16]> <0/1>\n",
+	"\tUsage:		pcar outwr <value[0..65535]>\n",
 	"\tExample:		pcar outwr 2 1; Turn output #2 On\n"};
 
 static int doRelayWrite(int argc, char *argv[])
@@ -237,10 +237,10 @@ const CliCmdType CMD_RELAY_READ =
 	"outrd",
 	1,
 	&doRelayRead,
-	"\toutrd:		Read relays  status\n",
-	"\tUsage:		pcar outrd <channel[1..4]>\n",
+	"\toutrd:		Read output state\n",
+	"\tUsage:		pcar outrd <channel[1..16]>\n",
 	"\tUsage:		pcar outrd\n",
-	"\tExample:		pcar outrd 2; Read Status of Relay #2 \n"};
+	"\tExample:		pcar outrd 2; Read Status of output port #2 \n"};
 
 static int doRelayRead(int argc, char *argv[])
 {
