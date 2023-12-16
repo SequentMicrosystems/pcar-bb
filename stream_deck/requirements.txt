@@ -1,0 +1,10 @@
+sudo apt update
+sudo apt -y dist-upgrade
+sudo apt -y install python-pip3 python-setuptools
+sudo apt -y install zlib1g-dev libopenjp2-7 libtiff5 libatlas-base-dev libhidapi-libusb0 libjpeg-dev
+python3 -m pip install --upgrade pip
+python3 -m pip install -no-cache-dir wheel streamdeck pillow
+sudo tee /etc/udev/rules.d/10-streamdeck.rules << EOF
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="0fd9", GROUP="users", TAG+="uaccess"
+EOF
+sudo udevadm control --reload-rules

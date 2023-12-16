@@ -1,0 +1,13 @@
+[Unit]
+Desciption=Perimeter patrol startup
+ConditionPathExists=/usr/local/bin/pcar_startup
+
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/pcar_startup
+TimeoutSec=0
+RemainAfterExit=yes
+SysVStartPriority=99
+
+[Install]
+WantedBy=multi-user.target

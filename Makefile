@@ -1,5 +1,4 @@
-DESTDIR?=/usr
-PREFIX?=/local
+DESTDIR?=/usr/local
 
 ifneq ($V,1)
 Q ?= @
@@ -8,7 +7,7 @@ endif
 CC	= gcc
 CFLAGS	= $(DEBUG) -Wall -Wextra $(INCLUDE) -Winline -pipe 
 
-LDFLAGS	= -L$(DESTDIR)$(PREFIX)/lib
+LDFLAGS	= -L$(DESTDIR)/lib
 LIBS    = -lpthread -lrt -lm -lcrypt
 
 SRC	=	src/pcar.c src/comm.c src/thread.c src/relay.c src/input.c
@@ -32,16 +31,20 @@ clean:
 
 .PHONY:	install
 install: pcar
-	$Q echo "[Install]"
-	$Q cp pcar		$(DESTDIR)$(PREFIX)/bin
-ifneq ($(WIRINGPI_SUID),0)
-	$Q chown root.root	$(DESTDIR)$(PREFIX)/bin/pcar
-	$Q chmod 4755		$(DESTDIR)$(PREFIX)/bin/pcar
+ifneq ($(shell id -u),0)
+	$Q echo "Must be root! (sudo make install)"
+	$Q exit 1
 endif
+	$Q echo "[Install]"
+	$Q install -D -m 4755 -o root pcar $(DESTDIR)/bin
+	$Q install -D -m 4755 -o root stream_deck/start_stream_deck $(DESTDIR)/bin
+	$Q mkdir -p $(DESTDIR)/share/pcar
+	$Q cp -r stream_deck/Assets $(DESTDIR)/share/pcar/Assets
+	$Q install -D -m 4755 -o root pcar_startup $(DESTDIR)/bin
 
 
 .PHONY:	uninstall
 uninstall:
 	$Q echo "[UnInstall]"
-	$Q rm -f $(DESTDIR)$(PREFIX)/bin/pcar
-	$Q rm -f $(DESTDIR)$(PREFIX)/man/man1/pcar.1
+	$Q rm -f $(DESTDIR)/bin/pcar
+	$Q rm -f $(DESTDIR)/man/man1/pcar.1
