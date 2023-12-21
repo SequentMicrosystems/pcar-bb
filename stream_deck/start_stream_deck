@@ -29,7 +29,7 @@ from StreamDeck.Transport.Transport import TransportError
 # ASSETS_PATH = os.path.join(os.path.dirname(__file__), "Assets")
 ASSETS_PATH = os.path.join("/usr/local/share/pcar", "Assets")
 # Animation frames per second to attempt to display on the StreamDeck devices.
-FRAMES_PER_SECOND = 5
+FRAMES_PER_SECOND = 2
 FONT = ImageFont.truetype(os.path.join(ASSETS_PATH, "Anonymous.ttf"), 14)
 
 BUTTON_NO = 6
@@ -77,13 +77,15 @@ def turn_on(button):
     print("Button {} turned ON".format(button))
     os.system("pcar outwr {} 1".format(BUTTON_TO_SENSOR[button]))
     # TODO CHECK FOR ERROR
-    buttons[button].image = itertools.cycle(animations["on"][button])
+    if not buttons[button].alert:
+        buttons[button].image = itertools.cycle(animations["on"][button])
 
 def turn_off(button):
     buttons[button].state = 0
     print("Button {} turned OFF".format(button))
     os.system("pcar outwr {} 0".format(BUTTON_TO_SENSOR[button]))
-    buttons[button].image = itertools.cycle(animations["off"][button])
+    if not buttons[button].alert:
+        buttons[button].image = itertools.cycle(animations["off"][button])
 
 # Loads in a source image, extracts out the individual animation frames (if
 # any) and returns a list of animation frames in the StreamDeck device's
@@ -121,7 +123,7 @@ def key_change_callback(deck, key, state):
     if not state:
         return
     button = key + 1
-    if button == 2:
+    if button == ALL_BUTTON:
         if buttons[button].state == 0:
             buttons[button].state = 1
             buttons[button].image = itertools.cycle(animations["on"][button])
@@ -141,7 +143,7 @@ def key_change_callback(deck, key, state):
             sum_states += int(buttons[button].state)
         if sum_states == len(NORMAL_BUTTONS):
             buttons[ALL_BUTTON].state = 1
-            buttons[ALL_BUTTON].image = itertools.cycle(animations["on"][button])
+            buttons[ALL_BUTTON].image = itertools.cycle(animations["on"][ALL_BUTTON])
     else:
         turn_off(button)
         # Check if all buttons are off
@@ -188,14 +190,13 @@ def t_check_sensors(deck):
 
 def _cleanup(deck):
     with deck:
+        os.system("pcar outwr 0")
         deck.reset()
         deck.close()
 
 def my_wrapped_sigterm_handler(deck):
     def signal_handler(signum, frame): # the actual sigint handler
-        with deck:
-            deck.reset()
-            deck.close()
+        _cleanup(deck)
     return signal_handler
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ endif
 	$Q install -D -m 4755 -o root pcar $(DESTDIR)/bin
 	$Q install -D -m 4755 -o root stream_deck/start_stream_deck $(DESTDIR)/bin
 	$Q mkdir -p $(DESTDIR)/share/pcar
-	$Q cp -r stream_deck/Assets $(DESTDIR)/share/pcar/Assets
+	$Q cp -r stream_deck/Assets $(DESTDIR)/share/pcar/
 	$Q install -D -m 4755 -o root pcar_start $(DESTDIR)/bin
 	$Q install -D -m 4755 -o root pcar_stop $(DESTDIR)/bin
 
