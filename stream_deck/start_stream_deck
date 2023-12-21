@@ -16,6 +16,8 @@ import itertools
 import os
 import threading
 import time
+import atexit
+import signal
 
 from fractions import Fraction
 from PIL import Image, ImageDraw, ImageFont, ImageSequence
@@ -184,6 +186,17 @@ def t_check_sensors(deck):
                 print("Transport error {}".format(err))
                 break
 
+def _cleanup(deck):
+    with deck:
+        deck.reset()
+        deck.close()
+
+def my_wrapped_sigterm_handler(deck):
+    def signal_handler(signum, frame): # the actual sigint handler
+        with deck:
+            deck.reset()
+            deck.close()
+    return signal_handler
 
 if __name__ == "__main__":
     streamdecks = DeviceManager().enumerate()
@@ -195,8 +208,12 @@ if __name__ == "__main__":
         if not deck.is_visual():
             continue
 
+        signal.signal(signal.SIGTERM, my_wrapped_sigterm_handler(deck))
+
         deck.open()
         deck.reset()
+
+        atexit.register(_cleanup, deck)
 
         print("Opened '{}' device (serial number: '{}')".format(deck.deck_type(), deck.get_serial_number()))
 

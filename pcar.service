@@ -1,13 +1,15 @@
 [Unit]
 Desciption=Perimeter patrol startup
-ConditionPathExists=/usr/local/bin/pcar_startup
+ConditionPathExists=/usr/local/bin/pcar_start
+After=rc.service
 
 [Service]
 Type=forking
-ExecStart=/usr/local/bin/pcar_startup
-TimeoutSec=0
-RemainAfterExit=yes
-SysVStartPriority=99
+User=debian
+ExecStart=/usr/local/bin/pcar_start
+ExecStop=/usr/local/bin/pcar_stop
+#Restart=on-failure
+#RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target

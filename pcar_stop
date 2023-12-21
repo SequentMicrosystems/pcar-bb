@@ -1,0 +1,4 @@
+#!/bin/bash
+
+pcar fanwr 0
+pkill -f start_stream_deck
